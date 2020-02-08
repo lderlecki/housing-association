@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'buildings.apps.BuildingsConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
-    'captcha',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -134,6 +133,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER') # access environment variable - email user
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS') # access environment variable - email password
-
-RECAPTCHA_SECRET_KEY = '6LcbCdcUAAAAAIIRWlX4Zf44zspfLK6lZAi9PYc0'
-RECAPTCHA_PUBLIC_KEY = '6LdLCdcUAAAAAB0SpJyxLmavEGugsS5mhJ_yBDEZ'
