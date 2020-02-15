@@ -1,4 +1,68 @@
 {% extends "buildings/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-        <h1>{{ user.username }}</h1>
+  <div class="content-section">
+    <div class="media-body">
+      <h2 class="account-heading">{{ user.first_name }} {{ user.last_name }}</h2>
+      <fieldset></fieldset>
+      <p class="text-secondary">{{ user.email }}</p>
+    </div>
+  </div>
+
+  <!-- Choose apartment -->
+  <form method="POST" action="#" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Choose your apartment</legend>
+
+      <p>
+        <label for="input">Residents number</label>
+        <input class="form-control" type="text" id="input" name="residents" placeholder="Number">
+      </p>
+      <p>
+        <label for="select">Select house</label>
+        <select class="form-control" id="housing" name="selected_house">
+          {% for building in allBuildings %}
+            <optgroup label="{{ building.street }} {{ building.number }}">
+              {% for apartment in allApartments %}
+                {% if apartment.building == building and apartment.owner == null %}
+                  <option value='{{ apartment.id }}'>Apartment {{ apartment.number }}</option>
+                {% endif %}
+              {% endfor %}
+            </optgroup>
+          {% endfor %}
+        </select>
+      </p>
+    </fieldset>
+    <div class="form-group">
+      <button class="btn btn-outline-info" type="submit" name="save_data" value="save_data">Submit</button>
+    </div>
+  </form>
+
+  <!-- Change username and email -->
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Profile Info</legend>
+      {{ u_form|crispy }}
+    </fieldset>
+    <div class="form-group">
+      <button class="btn btn-outline-info" type="submit" name="update" value="update">Update</button>
+    </div>
+  </form>
+
+
+        <!-- <h1>Profile</h1>
+        <address>
+          <strong>Accomodation</strong><br>
+          1234 Example Street<br>
+          Antartica, Example 0987<br>
+          <abbr title="Phone">P:</abbr> (123) 456-7890
+        </address>
+
+        <address>
+          <strong>Full Name</strong><br>
+          <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+          <a href="mailto:#">{{ user.email }}</a>
+        </address> -->
 {% endblock content %}

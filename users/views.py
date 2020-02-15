@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm
+
+from buildings.models import Apartment, Building
+from .forms import UserRegisterForm, UserUpdateForm
 
 
 def register(request):
@@ -20,4 +22,27 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, 'users/profile.html')
+    user = request.user
+    if request.method == 'POST':
+        if 'save_data' in request.POST:
+            u_form = UserUpdateForm(instance=user)
+            print(request.POST)
+            messages.success(request, 'You have succesfully registered a house!')
+        
+        if 'update' in request.POST:
+            u_form = UserUpdateForm(request.POST, instance=user)
+
+            if u_form.is_valid():
+                u_form.save()
+                messages.success(request, 'Your account has been updated!')
+                return redirect('profile')
+    else:
+        u_form = UserUpdateForm(instance=user)
+
+    buildings = Building.objects.all()
+    apartments = Apartment.objects.all()
+    context = {'u_form': u_form,
+               'allBuildings': buildings,
+               'allApartments': apartments}
+
+    return render(request, 'users/profile.html', context)
