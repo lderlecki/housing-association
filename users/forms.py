@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from buildings.models import Apartment
 
@@ -57,3 +58,44 @@ class HousingForm(forms.ModelForm):
         user.profile.apartment = apartment
         user.save()
         apartment.save()
+
+
+class RequestResetPasswordForm(forms.ModelForm):
+    email = forms.EmailField()
+
+    class Meta:
+        model = User
+        fields = ['email', ]
+
+    def clean_email(self, *args, **kwargs):
+        email = self.cleaned_data.get('email')
+        validator = EmailValidator(
+            message=f'{email} is not a valid email address. Please type in a correct one.'
+        )
+        try:
+            validator(email)
+        except ValidationError:
+            raise forms.ValidationError(validator.message)
+        return email
+
+
+class SetNewPassword(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+    confirm_password = forms.CharField(widget=forms.PasswordInput())
+
+    class Meta:
+        model = User
+        fields = ('password', 'confirm_password',)
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super(SetNewPassword, self).clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+        if password != confirm_password:
+            raise forms.ValidationError("Passwords must match each other.")
+        return cleaned_data
+
+    def save(self, user):
+        password = self.cleaned_data['password']
+        user.password = password
+        user.save()

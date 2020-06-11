@@ -13,6 +13,8 @@ urlpatterns = [
          auth_views.LoginView.as_view(template_name='users/login.html', redirect_authenticated_user=True),
          name='login'),
     path('activate/<uidb64>/<token>/', user_views.ActivateAccountView.as_view(), name='activate'),
+    path('set-new-password/<uidb64>/<token>/', user_views.SetNewPasswordView.as_view(), name='set-new-password'),
+    path('request-reset-email/', user_views.RequestResetEmailView.as_view(), name='request-reset-email'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('', include('buildings.urls')),
 ]
