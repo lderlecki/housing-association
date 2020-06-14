@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django import forms
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import EmailValidator
@@ -12,14 +15,19 @@ class UserRegisterForm(UserCreationForm):
     last_name = forms.CharField(label="Last name")
 
     class Meta:
-        model = User # affected model
+        model = User  # affected model
         fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2'] # fields and their order
     
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("User with this email already exists")
+        return email
+
     def save(self, commit=True):
         user = super(UserRegisterForm, self).save(commit=False)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
-        user.is_active = False
 
         if commit:
             user.save()
@@ -47,7 +55,7 @@ class HousingForm(forms.ModelForm):
     def clean_residents(self, *args, **kwargs):
         residents = self.cleaned_data.get('residents')
         if residents < 1:
-            raise forms.ValidationError("Number of residents must be greater than 0")
+            raise ValidationError("Number of residents must be greater than 0")
         return residents
 
     def save(self, user):
@@ -55,6 +63,7 @@ class HousingForm(forms.ModelForm):
         apartment = self.cleaned_data['apartment']
         apartment.owner = user
         apartment.no_residents = residents
+        apartment.move_in_date = datetime.now()
         user.profile.apartment = apartment
         user.save()
         apartment.save()
@@ -75,7 +84,7 @@ class RequestResetPasswordForm(forms.ModelForm):
         try:
             validator(email)
         except ValidationError:
-            raise forms.ValidationError(validator.message)
+            raise ValidationError(validator.message)
         return email
 
 
@@ -93,9 +102,10 @@ class SetNewPassword(forms.ModelForm):
         confirm_password = cleaned_data.get('confirm_password')
         if password != confirm_password:
             raise forms.ValidationError("Passwords must match each other.")
+        validate_password(password)
         return cleaned_data
 
     def save(self, user):
         password = self.cleaned_data['password']
-        user.password = password
+        user.set_password(password)
         user.save()

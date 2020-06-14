@@ -5,11 +5,11 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 class Building(models.Model):
-    street = models.CharField(max_length=100)
-    number = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=6)
-    city = models.CharField(max_length=100)
-    manager = models.ForeignKey(User, on_delete=models.CASCADE)
+    street      = models.CharField(max_length=100)
+    number      = models.CharField(max_length=100)
+    zip_code    = models.CharField(max_length=6)
+    city        = models.CharField(max_length=100)
+    manager     = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return f'Building {self.number}. Administrator of the building: {self.manager}'
@@ -25,11 +25,17 @@ class Building(models.Model):
 
 
 class Apartment(models.Model):
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)
-    owner = models.ForeignKey(User, default=None, on_delete=models.CASCADE, blank=True, null=True)
-    floor = models.IntegerField()
-    number = models.IntegerField()
-    no_residents = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    building      = models.ForeignKey(Building, on_delete=models.CASCADE)
+    owner         = models.ForeignKey(User, default=None, on_delete=models.SET_NULL, blank=True, null=True)
+    floor         = models.IntegerField()
+    number        = models.IntegerField()
+    no_residents  = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
+    move_in_date  = models.DateField(auto_now_add=False, auto_now=False, default=None, blank=True, null=True)
+    move_out_date = models.DateField(auto_now_add=False, auto_now=False, default=None, blank=True, null=True)
 
     def __str__(self):
         return f'{self.building.street} {self.building.number} m. {self.number}'
+
+
+# class ApartmentRentHistory(models.Model):
+#     apartment = models.ForeignKey(Apartment)
