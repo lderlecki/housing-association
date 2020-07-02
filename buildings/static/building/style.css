@@ -1,3 +1,39 @@
-body{
-    background: url('/static/img/bg.jpg');
+#featured{
+    width: 512px;
+    height: 330px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid black;
+}
+
+.thumbnail{
+    object-fit: cover;
+    max-width: 180px;
+    max-height: 100px;
+    cursor: pointer;
+    opacity: 0.5;
+    margin: 5px;
+    border: 2px solid black;
+}
+
+.thumbnail:hover{
+    opacity: 1;
+}
+
+.active{
+    opacity: 1;
+}
+
+#slider-wraper{
+    max-width: 500px;
+    display: flex;
+    min-height: 1px;
+    align-items: center;
+}
+
+#slider{
+    width: 400px;
+    display: flex;
+    flex-wrap: nowrap;
+    /*overflow-x: hidden;*/
 }

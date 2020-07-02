@@ -7,11 +7,13 @@ verify_ssl = true
 
 [packages]
 django = "*"
-celery = "*"
 django-crispy-forms = "*"
 wagtail-django-recaptcha = "*"
 six = "*"
 xhtml2pdf = "*"
+rabbitmq = "*"
+gevent = "*"
+celery = "*"
 
 [requires]
 python_version = "3.7"

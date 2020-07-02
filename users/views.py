@@ -16,6 +16,7 @@ from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeEr
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.generic import View
 
+from .decorators import unauthenticated_user
 from .forms import (UserRegisterForm,
                     UserUpdateForm,
                     HousingForm,
@@ -34,6 +35,7 @@ class EmailThread(threading.Thread):
         self.email_message.send()
 
 
+@unauthenticated_user
 def register(request):
     form = UserRegisterForm()
     if request.method == 'POST':
@@ -82,13 +84,24 @@ class Profile(View):
             if h_form.is_valid():
                 h_form.save(user)
                 messages.success(request, 'You have successfully registered a house!')
+                return redirect('profile')
+            context = {
+                'u_form': UserUpdateForm(instance=request.user),
+                'h_form': h_form,
+            }
+            return render(request, 'users/profile.html', context)
 
         elif 'update' in request.POST:
             u_form = UserUpdateForm(request.POST, instance=user)
             if u_form.is_valid():
                 u_form.save()
                 messages.success(request, 'Your account has been updated!')
-        return redirect('profile')
+                return redirect('profile')
+            context = {
+                'u_form': u_form,
+                'h_form': HousingForm(),
+            }
+            return render(request, 'users/profile.html', context)
 
 
 @login_required
@@ -171,7 +184,7 @@ class RequestResetEmailView(View):
             messages.success(request, f'Link with instructions to change your password has been sent! \n\
                                         Check your inbox.')
             return redirect('login')
-        print(form.errors)
+        # print(form.errors)
         return render(request, 'users/request-reset-email.html', self.context)
 
 

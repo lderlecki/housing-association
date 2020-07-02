@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
+
 from buildings.models import Apartment
 
 
@@ -16,7 +17,7 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = User  # affected model
-        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2'] # fields and their order
+        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']  # fields and their order
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -28,7 +29,6 @@ class UserRegisterForm(UserCreationForm):
         user = super(UserRegisterForm, self).save(commit=False)
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
-
         if commit:
             user.save()
         return user
@@ -36,6 +36,13 @@ class UserRegisterForm(UserCreationForm):
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            print('user with this email exists')
+            raise ValidationError("User with this email already exists")
+        return email
 
     class Meta:
         model = User

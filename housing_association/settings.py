@@ -22,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = os.environ.get('SECRET_KEY')
 SECRET_KEY = '^mp##!=wb85-ki7d=+_fcahnn_6vyfvd(1%_mfq1-*$pv+2p(u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -29,12 +30,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
     'buildings.apps.BuildingsConfig',
     'users.apps.UsersConfig',
+    'invoices.apps.InvoicesConfig',
     'crispy_forms',
 
     'django.contrib.admin',
@@ -112,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
